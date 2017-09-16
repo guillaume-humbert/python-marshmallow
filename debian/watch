@@ -1,0 +1,4 @@
+version=3
+
+opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/python-marshmallow-$1\.tar\.gz/ \
+  https://github.com/marshmallow-code/marshmallow/tags .*/v?(\d\S*)\.tar\.gz

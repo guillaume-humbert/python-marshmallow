@@ -1,0 +1,37 @@
+Source: python-marshmallow
+Maintainer: Federico Ceratto <federico@debian.org>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 10~)
+Build-Depends-Indep:
+ dh-python,
+ python3-all,
+ python3-dateutil,
+ python3-pytest,
+ python3-setuptools,
+ python3-simplejson,
+ python3-sphinx,
+ python3-tz
+Standards-Version: 4.1.0
+X-Python3-Version: >= 3.5
+Homepage: https://github.com/marshmallow-code/marshmallow
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/python-marshmallow.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/python-marshmallow.git
+
+Package: python3-marshmallow
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: Lightweight library for converting complex datatypes
+ An ORM/ODM/framework-agnostic library for converting complex datatypes,
+ such as objects, to and from native Python datatypes.
+
+Package: python3-marshmallow-doc
+Architecture: all
+Section: doc
+Depends: ${misc:Depends}, ${sphinxdoc:Depends},
+ libjs-jquery,
+ libjs-underscore
+Description: Library for converting complex datatypes - documentation
+ An ORM/ODM/framework-agnostic library for converting complex datatypes,
+ such as objects, to and from native Python datatypes.
+ Documentation package.
