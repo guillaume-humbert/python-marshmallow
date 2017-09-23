@@ -2,4 +2,4 @@ python-marshmallow (3.0.0b3-1) unstable; urgency=low
 
   * Initial package (Closes: #819648)
 
- -- Federico Ceratto <federico@debian.org>  Sat, 16 Sep 2017 22:30:35 +0100
+ -- Federico Ceratto <federico@debian.org>  Sat, 23 Sep 2017 16:21:52 +0100
