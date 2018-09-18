@@ -42,38 +42,54 @@ class URL(Validator):
         Can be interpolated with `{input}`.
     :param set schemes: Valid schemes. By default, ``http``, ``https``,
         ``ftp``, and ``ftps`` are allowed.
+    :param bool require_tld: Whether to reject non-FQDN hostnames
     """
 
-    URL_REGEX = re.compile(
-        r'^(?:[a-z0-9\.\-\+]*)://'  # scheme is validated separately
-        r'(?:[^:@]+?:[^:@]*?@|)'  # basic auth
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-        r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
-        r'localhost|'  # localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
-        r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
-        r'(?::\d+)?'  # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    class RegexMemoizer(object):
 
-    RELATIVE_URL_REGEX = re.compile(
-        r'^((?:[a-z0-9\.\-\+]*)://'  # scheme is validated separately
-        r'(?:[^:@]+?:[^:@]*?@|)'  # basic auth
-        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-        r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|'  # domain...
-        r'localhost|'  # localhost...
-        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|'  # ...or ipv4
-        r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
-        r'(?::\d+)?)?'  # optional port
-        r'(?:/?|[/?]\S+)$', re.IGNORECASE)  # host is optional, allow for relative URLs
+        def __init__(self):
+            self._memoized = {}
+
+        def _regex_generator(self, relative, require_tld):
+            return re.compile(
+                r''.join((
+                    r'^',
+                    r'(' if relative else r'',
+                    r'(?:[a-z0-9\.\-\+]*)://',  # scheme is validated separately
+                    r'(?:[^:@]+?:[^:@]*?@|)',  # basic auth
+                    r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+',
+                    r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|',  # domain...
+                    r'localhost|',  # localhost...
+                    (
+                        r'(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.?)|'
+                        if not require_tld else r''
+                    ),  # allow dotless hostnames
+                    r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|',  # ...or ipv4
+                    r'\[[A-F0-9]*:[A-F0-9:]+\])',  # ...or ipv6
+                    r'(?::\d+)?',  # optional port
+                    r')?' if relative else r'',  # host is optional, allow for relative URLs
+                    r'(?:/?|[/?]\S+)$',
+                )), re.IGNORECASE,
+            )
+
+        def __call__(self, relative, require_tld):
+            key = (relative, require_tld)
+            if key not in self._memoized:
+                self._memoized[key] = self._regex_generator(relative, require_tld)
+
+            return self._memoized[key]
+
+    _regex = RegexMemoizer()
 
     default_message = 'Not a valid URL.'
     default_schemes = set(['http', 'https', 'ftp', 'ftps'])
 
     # TODO; Switch position of `error` and `schemes` in 3.0
-    def __init__(self, relative=False, error=None, schemes=None):
+    def __init__(self, relative=False, error=None, schemes=None, require_tld=True):
         self.relative = relative
         self.error = error or self.default_message
         self.schemes = schemes or self.default_schemes
+        self.require_tld = require_tld
 
     def _repr_args(self):
         return 'relative={0!r}'.format(self.relative)
@@ -92,7 +108,7 @@ class URL(Validator):
             if scheme not in self.schemes:
                 raise ValidationError(message)
 
-        regex = self.RELATIVE_URL_REGEX if self.relative else self.URL_REGEX
+        regex = self._regex(self.relative, self.require_tld)
 
         if not regex.search(value):
             raise ValidationError(message)
@@ -111,7 +127,8 @@ class Email(Validator):
         r"(^[-!#$%&'*+/=?^`{}|~\w]+(\.[-!#$%&'*+/=?^`{}|~\w]+)*$"  # dot-atom
         # quoted-string
         r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]'
-        r'|\\[\001-\011\013\014\016-\177])*"$)', re.IGNORECASE | re.UNICODE)
+        r'|\\[\001-\011\013\014\016-\177])*"$)', re.IGNORECASE | re.UNICODE,
+    )
 
     DOMAIN_REGEX = re.compile(
         # domain
@@ -119,7 +136,8 @@ class Email(Validator):
         r'(?:[A-Z]{2,6}|[A-Z0-9-]{2,})$'
         # literal form, ipv4 address (SMTP 4.1.3)
         r'|^\[(25[0-5]|2[0-4]\d|[0-1]?\d?\d)'
-        r'(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$', re.IGNORECASE | re.UNICODE)
+        r'(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}\]$', re.IGNORECASE | re.UNICODE,
+    )
 
     DOMAIN_WHITELIST = ('localhost',)
 
@@ -222,7 +240,7 @@ class Length(Validator):
         if equal is not None and any([min, max]):
             raise ValueError(
                 'The `equal` parameter was provided, maximum or '
-                'minimum parameter must not be provided.'
+                'minimum parameter must not be provided.',
             )
 
         self.min = min
@@ -234,8 +252,10 @@ class Length(Validator):
         return 'min={0!r}, max={1!r}, equal={2!r}'.format(self.min, self.max, self.equal)
 
     def _format_error(self, value, message):
-        return (self.error or message).format(input=value, min=self.min, max=self.max,
-                                              equal=self.equal)
+        return (self.error or message).format(
+            input=value, min=self.min, max=self.max,
+            equal=self.equal,
+        )
 
     def __call__(self, value):
         length = len(value)

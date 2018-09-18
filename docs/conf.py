@@ -56,8 +56,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'marshmallow'
-copyright = ' {0:%Y} <a href="http://stevenloria.com">Steven Loria</a>'.format(
-    dt.datetime.utcnow()
+copyright = ' {0:%Y} <a href="https://stevenloria.com">Steven Loria</a>'.format(
+    dt.datetime.utcfromtimestamp(os.path.getmtime('../CHANGELOG.rst')),
 )
 
 version = release = marshmallow.__version__
@@ -80,7 +80,8 @@ html_theme_options = {
     'github_repo': 'marshmallow',
     'github_banner': True,
     'github_type': 'star',
-    'donate_url': 'https://www.paypal.me/StevenLoria',
+    'opencollective': 'marshmallow',
+    'tidelift_url': 'https://tidelift.com/subscription/pkg/pypi-marshmallow?utm_source=pypi-marshmallow&utm_medium=docs',
     'code_font_size': '0.8em',
     'warn_bg': '#FFC',
     'warn_border': '#EEE',
@@ -89,13 +90,15 @@ html_theme_options = {
         ('marshmallow @ PyPI', 'http://pypi.python.org/pypi/marshmallow'),
         ('marshmallow @ GitHub', 'http://github.com/marshmallow-code/marshmallow'),
         ('Issue Tracker', 'http://github.com/marshmallow-code/marshmallow/issues'),
-    ])
+    ]),
 }
 
 html_sidebars = {
     'index': [
-        'about.html', 'useful-links.html', 'searchbox.html',
+        'about.html', 'donate.html', 'useful-links.html', 'searchbox.html',
     ],
-    '**': ['about.html', 'useful-links.html',
-           'localtoc.html', 'relations.html', 'searchbox.html']
+    '**': [
+        'about.html', 'donate.html', 'useful-links.html',
+        'localtoc.html', 'relations.html', 'searchbox.html',
+    ],
 }
