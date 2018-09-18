@@ -17,4 +17,4 @@ override_dh_installchangelogs:
 
 override_dh_auto_clean:
 	dh_auto_clean
-	rm -rf debian/html .cache
+	rm -rf debian/html .cache .pytest_cache
