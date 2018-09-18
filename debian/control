@@ -2,7 +2,7 @@ Source: python-marshmallow
 Maintainer: Federico Ceratto <federico@debian.org>
 Section: python
 Priority: optional
-Build-Depends: debhelper (>= 10~)
+Build-Depends: debhelper (>= 11~)
 Build-Depends-Indep:
  dh-python,
  python3-all,
