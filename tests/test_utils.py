@@ -34,6 +34,7 @@ def test_to_marshallable_type():
 def test_to_marshallable_type_none():
     assert utils.to_marshallable_type(None) is None
 
+
 PointNT = namedtuple('Point', ['x', 'y'])
 
 def test_to_marshallable_type_with_namedtuple():
@@ -47,11 +48,13 @@ class PointClass(object):
         self.x = x
         self.y = y
 
-@pytest.mark.parametrize('obj', [
-    PointNT(24, 42),
-    PointClass(24, 42),
-    {'x': 24, 'y': 42}
-])
+@pytest.mark.parametrize(
+    'obj', [
+        PointNT(24, 42),
+        PointClass(24, 42),
+        {'x': 24, 'y': 42},
+    ],
+)
 def test_get_value_from_object(obj):
     result = utils.get_value(obj, 'x')
     assert result == 24
@@ -85,13 +88,13 @@ def test_get_value_from_dict():
     assert utils.get_value(d, 'keys') == ['baz', 'quux']
 
 def test_get_value():
-    l = [1, 2, 3]
-    assert utils.get_value(l, 1) == 2
+    lst = [1, 2, 3]
+    assert utils.get_value(lst, 1) == 2
 
     class MyInt(int):
         pass
 
-    assert utils.get_value(l, MyInt(1)) == 2
+    assert utils.get_value(lst, MyInt(1)) == 2
 
 
 def test_set_value():
@@ -122,8 +125,8 @@ def test_is_keyed_tuple():
     assert utils.is_keyed_tuple(d) is False
     s = 'xy'
     assert utils.is_keyed_tuple(s) is False
-    l = [24, 42]
-    assert utils.is_keyed_tuple(l) is False
+    lst = [24, 42]
+    assert utils.is_keyed_tuple(lst) is False
 
 def test_to_marshallable_type_list():
     assert utils.to_marshallable_type(['foo', 'bar']) == ['foo', 'bar']
@@ -134,13 +137,13 @@ def test_to_marshallable_type_generator():
 
 def test_marshallable():
     class ObjContainer(object):
-        contained = {"foo": 1}
+        contained = {'foo': 1}
 
         def __marshallable__(self):
             return self.contained
 
     obj = ObjContainer()
-    assert utils.to_marshallable_type(obj) == {"foo": 1}
+    assert utils.to_marshallable_type(obj) == {'foo': 1}
 
 def test_is_collection():
     assert utils.is_collection([1, 'foo', {}]) is True
@@ -149,7 +152,7 @@ def test_is_collection():
 
 def test_rfcformat_gmt_naive():
     d = dt.datetime(2013, 11, 10, 1, 23, 45)
-    assert utils.rfcformat(d) == "Sun, 10 Nov 2013 01:23:45 -0000"
+    assert utils.rfcformat(d) == 'Sun, 10 Nov 2013 01:23:45 -0000'
 
 def test_rfcformat_central():
     d = central.localize(dt.datetime(2013, 11, 10, 1, 23, 45), is_dst=False)
@@ -157,7 +160,7 @@ def test_rfcformat_central():
 
 def test_rfcformat_central_localized():
     d = central.localize(dt.datetime(2013, 11, 10, 8, 23, 45), is_dst=False)
-    assert utils.rfcformat(d, localtime=True) == "Sun, 10 Nov 2013 08:23:45 -0600"
+    assert utils.rfcformat(d, localtime=True) == 'Sun, 10 Nov 2013 08:23:45 -0600'
 
 def test_isoformat():
     d = dt.datetime(2013, 11, 10, 1, 23, 45)
@@ -165,11 +168,11 @@ def test_isoformat():
 
 def test_isoformat_tzaware():
     d = central.localize(dt.datetime(2013, 11, 10, 1, 23, 45), is_dst=False)
-    assert utils.isoformat(d) == "2013-11-10T07:23:45+00:00"
+    assert utils.isoformat(d) == '2013-11-10T07:23:45+00:00'
 
 def test_isoformat_localtime():
     d = central.localize(dt.datetime(2013, 11, 10, 1, 23, 45), is_dst=False)
-    assert utils.isoformat(d, localtime=True) == "2013-11-10T01:23:45-06:00"
+    assert utils.isoformat(d, localtime=True) == '2013-11-10T01:23:45-06:00'
 
 def test_from_datestring():
     d = dt.datetime.now()
@@ -187,17 +190,17 @@ def test_from_rfc(use_dateutil):
     assert_datetime_equal(result, d)
 
 @pytest.mark.parametrize('use_dateutil', [True, False])
-def test_from_iso(use_dateutil):
+def test_from_iso_datetime(use_dateutil):
     d = dt.datetime.now()
     formatted = d.isoformat()
-    result = utils.from_iso(formatted, use_dateutil=use_dateutil)
+    result = utils.from_iso_datetime(formatted, use_dateutil=use_dateutil)
     assert type(result) == dt.datetime
     assert_datetime_equal(result, d)
 
 def test_from_iso_with_tz():
     d = central.localize(dt.datetime.now())
     formatted = d.isoformat()
-    result = utils.from_iso(formatted)
+    result = utils.from_iso_datetime(formatted)
     assert_datetime_equal(result, d)
     if utils.dateutil_available:
         # Note a naive datetime

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-from marshmallow import fields, Schema, ValidationError
+from marshmallow import fields, Schema, ValidationError, EXCLUDE
 from marshmallow.marshalling import missing
+from marshmallow.exceptions import StringNotCollectionError
 
-from tests.base import ALL_FIELDS, User
+from tests.base import ALL_FIELDS
+
 
 class TestFieldAliases:
 
@@ -20,18 +22,21 @@ class TestFieldAliases:
     def test_URL_is_Url(self):  # flake8: noqa
         assert fields.URL is fields.Url
 
+
 class TestField:
 
     def test_repr(self):
         default = u'œ∑´'
         field = fields.Field(default=default, attribute=None)
         assert repr(field) == (u'<fields.Field(default={0!r}, attribute=None, '
-                                'validate=None, required=False, '
-                                'load_only=False, dump_only=False, '
-                                'missing={missing}, allow_none=False, '
-                                'error_messages={error_messages})>'
-                                .format(default, missing=missing,
-                                        error_messages=field.error_messages))
+                               'validate=None, required=False, '
+                               'load_only=False, dump_only=False, '
+                               'missing={missing}, allow_none=False, '
+                               'error_messages={error_messages})>'
+                               .format(
+                                   default, missing=missing,
+                                   error_messages=field.error_messages,
+                               ))
         int_field = fields.Integer(validate=lambda x: True)
         assert '<fields.Integer' in repr(int_field)
 
@@ -39,7 +44,7 @@ class TestField:
         with pytest.raises(ValueError):
             fields.Field(validate='notcallable')
 
-    def test_custom_field_receives_attr_and_obj(self, user):
+    def test_custom_field_receives_attr_and_obj(self):
         class MyField(fields.Field):
             def _deserialize(self, val, attr, data):
                 assert attr == 'name'
@@ -49,10 +54,10 @@ class TestField:
         class MySchema(Schema):
             name = MyField()
 
-        result = MySchema().load({'name': 'Monty', 'foo': 42})
-        assert result.data == {'name': 'Monty'}
+        result = MySchema(unknown=EXCLUDE).load({'name': 'Monty', 'foo': 42})
+        assert result == {'name': 'Monty'}
 
-    def test_custom_field_receives_load_from_if_set(self, user):
+    def test_custom_field_receives_data_key_if_set(self):
         class MyField(fields.Field):
             def _deserialize(self, val, attr, data):
                 assert attr == 'name'
@@ -60,12 +65,12 @@ class TestField:
                 return val
 
         class MySchema(Schema):
-            Name = MyField(load_from='name')
+            Name = MyField(data_key='name')
 
-        result = MySchema().load({'name': 'Monty', 'foo': 42})
-        assert result.data == {'Name': 'Monty'}
+        result = MySchema(unknown=EXCLUDE).load({'name': 'Monty', 'foo': 42})
+        assert result == {'Name': 'Monty'}
 
-    def test_custom_field_follows_dump_to_if_set(self, user):
+    def test_custom_field_follows_data_key_if_set(self):
         class MyField(fields.Field):
             def _serialize(self, val, attr, data):
                 assert attr == 'name'
@@ -73,10 +78,10 @@ class TestField:
                 return val
 
         class MySchema(Schema):
-            name = MyField(dump_to='_NaMe')
+            name = MyField(data_key='_NaMe')
 
         result = MySchema().dump({'name': 'Monty', 'foo': 42})
-        assert result.data == {'_NaMe': 'Monty'}
+        assert result == {'_NaMe': 'Monty'}
 
     def test_number_fields_prohbits_boolean(self):
         strict_field = fields.Float()
@@ -136,8 +141,10 @@ class TestMetadata:
     def test_extra_metadata_may_be_added_to_field(self, FieldClass):  # noqa
         field = FieldClass(description='Just a normal field.')
         assert field.metadata['description'] == 'Just a normal field.'
-        field = FieldClass(required=True, default=None, validate=lambda v: True,
-                            description='foo', widget='select')
+        field = FieldClass(
+            required=True, default=None, validate=lambda v: True,
+            description='foo', widget='select',
+        )
         assert field.metadata == {'description': 'foo', 'widget': 'select'}
 
     def test_metadata_may_be_added_to_formatted_string_field(self):
@@ -149,12 +156,12 @@ class TestErrorMessages:
 
     class MyField(fields.Field):
         default_error_messages = {
-            'custom': 'Custom error message.'
+            'custom': 'Custom error message.',
         }
 
-    def test_default_error_messages_get_merged_with_parent_error_messages(self):
+    def test_default_error_messages_get_merged_with_parent_error_messages_cstm_msg(self):
         field = self.MyField()
-        assert field.error_messages['custom'] == 'Custom error message'
+        assert field.error_messages['custom'] == 'Custom error message.'
         assert 'required' in field.error_messages
 
     def test_default_error_messages_get_merged_with_parent_error_messages(self):
@@ -185,3 +192,11 @@ class TestErrorMessages:
 
         assert 'doesntexist' in excinfo.value.args[0]
         assert 'MyField' in excinfo.value.args[0]
+
+
+class TestNestedField:
+
+    @pytest.mark.parametrize('param', ('only', 'exclude'))
+    def test_nested_only_and_exclude_as_string(self, param):
+        with pytest.raises(StringNotCollectionError):
+            fields.Nested(Schema, **{param: 'foo'})

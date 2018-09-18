@@ -18,7 +18,7 @@
 
     schema = AlbumSchema()
     result = schema.dump(album)
-    pprint(result.data, indent=2)
+    pprint(result, indent=2)
     # { 'artist': {'name': 'David Bowie'},
     #   'release_date': '1971-12-17',
     #   'title': 'Hunky Dory'}
@@ -38,4 +38,4 @@ Get It Now
     $ pip install -U marshmallow --pre
 
 
-Ready to get started? Go on to the :ref:`Quickstart tutorial <quickstart>` or check out some :ref:`Examples <examples>`.
+Ready to get started? Go on to the :doc:`Quickstart tutorial <quickstart>` or check out some :doc:`Examples <examples>`.
