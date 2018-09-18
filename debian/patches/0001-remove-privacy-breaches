@@ -11,7 +11,7 @@ Subject: Remove privacy breaches
  ]
  
  primary_domain = 'py'
-@@ -76,11 +75,6 @@
+@@ -76,10 +75,6 @@
      'logo': 'marshmallow-logo.png',
      'description': 'Object serialization and deserialization, lightweight and fluffy.',
      'description_font_style': 'italic',
@@ -19,7 +19,6 @@ Subject: Remove privacy breaches
 -    'github_repo': 'marshmallow',
 -    'github_banner': True,
 -    'github_type': 'star',
--    'donate_url': 'https://www.paypal.me/StevenLoria',
+     'opencollective': 'marshmallow',
+     'tidelift_url': 'https://tidelift.com/subscription/pkg/pypi-marshmallow?utm_source=pypi-marshmallow&utm_medium=docs',
      'code_font_size': '0.8em',
-     'warn_bg': '#FFC',
-     'warn_border': '#EEE',
