@@ -10,7 +10,7 @@ export PYBUILD_DISABLE_python2=test/test_py3
 
 override_dh_auto_build:
 	dh_auto_build
-	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' sphinx-build -N -bhtml docs debian/html
+	PYTHONPATH=. http_proxy='http://127.0.0.1:9/' python3 -m sphinx -N -bhtml docs debian/html
 
 override_dh_installchangelogs:
 	dh_installchangelogs CHANGELOG.rst
