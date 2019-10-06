@@ -2,22 +2,19 @@
 
 Uses the `timeit` module to benchmark serializing an object through Marshmallow.
 """
-
-from __future__ import print_function, unicode_literals, division
-
 import argparse
 import cProfile
 import gc
 import timeit
-import time
+import datetime
 
-from marshmallow import Schema, fields, ValidationError, pre_load
+from marshmallow import Schema, fields, ValidationError, post_dump
 
 
 # Custom validator
 def must_not_be_blank(data):
     if not data:
-        raise ValidationError('Data not provided.')
+        raise ValidationError("Data not provided.")
 
 
 class AuthorSchema(Schema):
@@ -27,40 +24,31 @@ class AuthorSchema(Schema):
     book_count = fields.Float()
     age = fields.Float()
     address = fields.Str()
-    full_name = fields.Method('full_name')
+    full_name = fields.Method("get_full_name")
 
-    def full_name(self, obj):
-        return obj.first + ' ' + obj.last
-
-    def format_name(self, author):
-        return '{0}, {1}'.format(author.last, author.first)
+    def get_full_name(self, author):
+        return "{}, {}".format(author.last, author.first)
 
 
 class QuoteSchema(Schema):
     id = fields.Int(dump_only=True)
     author = fields.Nested(AuthorSchema, validate=must_not_be_blank)
     content = fields.Str(required=True, validate=must_not_be_blank)
-    posted_at = fields.Int(dump_only=True)
+    posted_at = fields.DateTime(dump_only=True)
     book_name = fields.Str()
     page_number = fields.Float()
     line_number = fields.Float()
     col_number = fields.Float()
 
-    # Allow client to pass author's full name in request body
-    # e.g. {"author': 'Tim Peters"} rather than {"first": "Tim", "last": "Peters"}
-    @pre_load
-    def process_author(self, data):
-        author_name = data.get('author')
-        if author_name:
-            first, last = author_name.split(' ')
-            author_dict = dict(first=first, last=last)
-        else:
-            author_dict = {}
-        data['author'] = author_dict
+    @post_dump
+    def add_full_name(self, data, **kwargs):
+        data["author_full"] = "{}, {}".format(
+            data["author"]["last"], data["author"]["first"]
+        )
         return data
 
 
-class Author(object):
+class Author:
     def __init__(self, id, first, last, book_count, age, address):
         self.id = id
         self.first = first
@@ -70,10 +58,17 @@ class Author(object):
         self.address = address
 
 
-class Quote(object):
+class Quote:
     def __init__(
-        self, id, author, content, posted_at, book_name, page_number,
-        line_number, col_number,
+        self,
+        id,
+        author,
+        content,
+        posted_at,
+        book_name,
+        page_number,
+        line_number,
+        col_number,
     ):
         self.id = id
         self.author = author
@@ -92,38 +87,44 @@ def run_timeit(quotes, iterations, repeat, profile=False):
         profile.enable()
 
     gc.collect()
-    best = min(timeit.repeat(
-        lambda: quotes_schema.dump(quotes),
-        'gc.enable()',
-        number=iterations,
-        repeat=repeat,
-    ))
+    best = min(
+        timeit.repeat(
+            lambda: quotes_schema.dump(quotes),
+            "gc.enable()",
+            number=iterations,
+            repeat=repeat,
+        )
+    )
     if profile:
         profile.disable()
-        profile.dump_stats('marshmallow.pprof')
+        profile.dump_stats("marshmallow.pprof")
 
     usec = best * 1e6 / iterations
     return usec
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Runs a benchmark of Marshmallow.')
+    parser = argparse.ArgumentParser(description="Runs a benchmark of Marshmallow.")
     parser.add_argument(
-        '--iterations', type=int, default=1000,
-        help='Number of iterations to run per test.',
+        "--iterations",
+        type=int,
+        default=1000,
+        help="Number of iterations to run per test.",
     )
     parser.add_argument(
-        '--repeat', type=int, default=5,
-        help='Number of times to repeat the performance test.  The minimum will '
-             'be used.',
+        "--repeat",
+        type=int,
+        default=5,
+        help="Number of times to repeat the performance test.  The minimum will "
+        "be used.",
     )
     parser.add_argument(
-        '--object-count', type=int, default=20,
-        help='Number of objects to dump.',
+        "--object-count", type=int, default=20, help="Number of objects to dump."
     )
     parser.add_argument(
-        '--profile', action='store_true',
-        help='Whether or not to profile Marshmallow while running the benchmark.',
+        "--profile",
+        action="store_true",
+        help="Whether or not to profile Marshmallow while running the benchmark.",
     )
     args = parser.parse_args()
 
@@ -132,15 +133,23 @@ def main():
     for i in range(args.object_count):
         quotes.append(
             Quote(
-                i, Author(i, 'Foo', 'Bar', 42, 66, '123 Fake St'),
-                'Hello World', time.time(), 'The World', 34, 3, 70,
-            ),
+                i,
+                Author(i, "Foo", "Bar", 42, 66, "123 Fake St"),
+                "Hello World",
+                datetime.datetime(2019, 7, 4, tzinfo=datetime.timezone.utc),
+                "The World",
+                34,
+                3,
+                70,
+            )
         )
 
-    print('Benchmark Result: {0:.2f} usec/dump'.format(
-        run_timeit(quotes, args.iterations, args.repeat, profile=args.profile),
-    ))
+    print(
+        "Benchmark Result: {:.2f} usec/dump".format(
+            run_timeit(quotes, args.iterations, args.repeat, profile=args.profile)
+        )
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

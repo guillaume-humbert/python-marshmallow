@@ -106,3 +106,36 @@ Contributors (chronological)
 - Guillaume Gelin `@ramnes <https://github.com/ramnes>`_
 - Maxim Novikov `@m-novikov <https://github.com/m-novikov>`_
 - James Remeika `@remeika <https://github.com/remeika>`_
+- Karandeep Singh Nagra `@knagra <https://github.com/knagra>`_
+- Dushyant Rijhwani `@dushr <https://github.com/dushr>`_
+- Viktor Kerkez `@alefnula <https://github.com/alefnula>`_
+- Victor Gavro `@vgavro <https://github.com/vgavro>`_
+- Kamil Gałuszka `@galuszkak <https://github.com/galuszkak>`_
+- David Watson `@arbor-dwatson <https://github.com/arbor-dwatson>`_
+- Jan Margeta `@jmargeta <https://github.com/jmargeta>`_
+- AlexV `@asmodehn <https://github.com/asmodehn>`_
+- `@toffan <https://github.com/toffan>`_
+- Hampus Dunström `@Dunstrom <https://github.com/Dunstrom>`_
+- Robert Jensen `@r1b <https://github.com/r1b>`_
+- Arijit Basu `@sayanarijit <https://github.com/sayanarijit>`_
+- Sanjay P `@snjypl <https://github.com/snjypl>`_
+- Víctor Zabalza `@zblz <https://github.com/zblz>`_
+- Riley Gibbs `@rileyjohngibbs <https://github.com/rileyjohngibbs>`_
+- Henry Doupe `@hdoupe <https://github.com/hdoupe>`_
+- `@miniscruff <https://github.com/miniscruff>`_
+- `@maxalbert <https://github.com/maxalbert>`_
+- Kim Gustyr `@khvn26 <https://github.com/khvn26>`_
+- Bryce Drennan `@brycedrennan <https://github.com/brycedrennan>`_
+- Tim Shaffer `@timster <https://github.com/timster>`_
+- Hugo van Kemenade `@hugovk <https://github.com/hugovk>`_
+- Maciej Urbański `@rooterkyberian <https://github.com/rooterkyberian>`_
+- Kostas Konstantopoulos `@kdop <https://github.com/kdop>`_
+- Stephen J. Fuhry `@fuhrysteve <https://github.com/fuhrysteve>`_
+- `@dursk <https://github.com/dursk>`_
+- Ezra MacDonald `@macdonaldezra <https://github.com/macdonaldezra>`_
+- Stanislav Rogovskiy `@atmo <https://github.com/atmo>`_
+- Cristi Scoarta `@cristi23 <https://github.com/cristi23>`_
+- Anthony Sottile `@asottile <https://github.com/asottile>`_
+- Charles-Axel Dein `@charlax <https://github.com/charlax>`_
+- `@phrfpeixoto <https://github.com/phrfpeixoto>`_
+- `@jceresini <https://github.com/jceresini>`_

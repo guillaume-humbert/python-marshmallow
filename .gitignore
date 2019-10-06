@@ -17,6 +17,7 @@ develop-eggs
 .installed.cfg
 lib
 lib64
+pip-wheel-metadata
 
 # Installer logs
 pip-log.txt
@@ -73,3 +74,8 @@ venv
 # Other
 .directory
 *.pprof
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json

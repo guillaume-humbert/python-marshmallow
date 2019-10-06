@@ -15,8 +15,6 @@ Schema
 
 .. autoclass:: marshmallow.SchemaOpts
 
-.. autofunction:: marshmallow.pprint
-
 .. _api_fields:
 
 Fields
@@ -32,6 +30,8 @@ Decorators
 .. automodule:: marshmallow.decorators
     :members:
 
+.. _api_validators:
+
 Validators
 ==========
 
@@ -44,10 +44,10 @@ Utility Functions
 .. automodule:: marshmallow.utils
     :members:
 
-Marshalling
+Error Store
 ===========
 
-.. automodule:: marshmallow.marshalling
+.. automodule:: marshmallow.error_store
     :members:
     :private-members:
 
