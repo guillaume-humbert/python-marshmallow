@@ -1,6 +1,4 @@
 
-.. _custom_fields:
-
 Custom Fields
 =============
 
@@ -15,17 +13,26 @@ The method you choose will depend on the manner in which you intend to reuse the
 Creating A Field Class
 ----------------------
 
-To create a custom field class, create a subclass of :class:`marshmallow.fields.Field` and implement its :meth:`_serialize <marshmallow.fields.Field._serialize>`, and/or :meth:`_deserialize <marshmallow.fields.Field._deserialize>` methods.
+To create a custom field class, create a subclass of :class:`marshmallow.fields.Field` and implement its :meth:`_serialize <marshmallow.fields.Field._serialize>` and/or :meth:`_deserialize <marshmallow.fields.Field._deserialize>` methods.
 
 .. code-block:: python
 
     from marshmallow import fields
 
+
     class TitleCased(fields.Field):
-        def _serialize(self, value, attr, obj):
+        """Field that serializes to a title case string and deserializes
+        to a lower case string.
+        """
+
+        def _serialize(self, value, attr, obj, **kwargs):
             if value is None:
-                return ''
+                return ""
             return value.title()
+
+        def _deserialize(self, value, attr, data, **kwargs):
+            return value.lower()
+
 
     class UserSchema(Schema):
         name = fields.String()
@@ -72,7 +79,7 @@ Both :class:`Function <marshmallow.fields.Function>` and :class:`Method <marshma
 
     class UserSchema(Schema):
         # `Method` takes a method name (str), Function takes a callable
-        balance = fields.Method('get_balance', deserialize='load_balance')
+        balance = fields.Method("get_balance", deserialize="load_balance")
 
         def get_balance(self, obj):
             return obj.income - obj.debt
@@ -82,8 +89,8 @@ Both :class:`Function <marshmallow.fields.Function>` and :class:`Method <marshma
 
 
     schema = UserSchema()
-    result = schema.load({'balance': '100.00'})
-    result['balance']  # => 100.0
+    result = schema.load({"balance": "100.00"})
+    result["balance"]  # => 100.0
 
 .. _adding-context:
 
@@ -97,26 +104,26 @@ In these cases, you can set the ``context`` attribute (a dictionary) of a `Schem
 As an example, you might want your ``UserSchema`` to output whether or not a ``User`` is the author of a ``Blog`` or whether the a certain word appears in a ``Blog's`` title.
 
 .. code-block:: python
-    :emphasize-lines: 4,8,15
 
     class UserSchema(Schema):
         name = fields.String()
         # Function fields optionally receive context argument
-        is_author = fields.Function(lambda user, context: user == context['blog'].author)
-        likes_bikes = fields.Method('writes_about_bikes')
+        is_author = fields.Function(lambda user, context: user == context["blog"].author)
+        likes_bikes = fields.Method("writes_about_bikes")
 
         def writes_about_bikes(self, user):
-            return 'bicycle' in self.context['blog'].title.lower()
+            return "bicycle" in self.context["blog"].title.lower()
+
 
     schema = UserSchema()
 
-    user = User('Freddie Mercury', 'fred@queen.com')
-    blog = Blog('Bicycle Blog', author=user)
+    user = User("Freddie Mercury", "fred@queen.com")
+    blog = Blog("Bicycle Blog", author=user)
 
-    schema.context = {'blog': blog}
+    schema.context = {"blog": blog}
     result = schema.dump(user)
-    result['is_author']  # => True
-    result['likes_bikes']  # => True
+    result["is_author"]  # => True
+    result["likes_bikes"]  # => True
 
 
 Customizing Error Messages
@@ -130,10 +137,9 @@ At the class level, default error messages are defined as a mapping from error c
 
     from marshmallow import fields
 
+
     class MyDate(fields.Date):
-        default_error_messages = {
-            'invalid': 'Please provide a valid date.',
-        }
+        default_error_messages = {"invalid": "Please provide a valid date."}
 
 .. note::
     A `Field's` ``default_error_messages`` dictionary gets merged with its parent classes' ``default_error_messages`` dictionaries.
@@ -144,11 +150,11 @@ Error messages can also be passed to a `Field's` constructor.
 
     from marshmallow import Schema, fields
 
+
     class UserSchema(Schema):
 
         name = fields.Str(
-            required=True,
-            error_messages={'required': 'Please provide a name.'}
+            required=True, error_messages={"required": "Please provide a name."}
         )
 
 
