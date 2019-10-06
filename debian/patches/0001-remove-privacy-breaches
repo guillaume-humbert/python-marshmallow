@@ -3,22 +3,22 @@ Subject: Remove privacy breaches
 
 --- a/docs/conf.py
 +++ b/docs/conf.py
-@@ -34,7 +34,6 @@
-     'sphinx.ext.intersphinx',
-     'sphinx.ext.viewcode',
-     'alabaster',
--    'sphinx_issues',
+@@ -13,7 +13,6 @@
+     "sphinx.ext.intersphinx",
+     "sphinx.ext.viewcode",
+     "alabaster",
+-    "sphinx_issues",
+     "versionwarning.extension",
  ]
  
- primary_domain = 'py'
-@@ -76,10 +75,6 @@
-     'logo': 'marshmallow-logo.png',
-     'description': 'Object serialization and deserialization, lightweight and fluffy.',
-     'description_font_style': 'italic',
--    'github_user': 'marshmallow-code',
--    'github_repo': 'marshmallow',
--    'github_banner': True,
--    'github_type': 'star',
-     'opencollective': 'marshmallow',
-     'tidelift_url': 'https://tidelift.com/subscription/pkg/pypi-marshmallow?utm_source=pypi-marshmallow&utm_medium=docs',
-     'code_font_size': '0.8em',
+@@ -50,10 +49,6 @@
+     "logo": "marshmallow-logo.png",
+     "description": "Object serialization and deserialization, lightweight and fluffy.",
+     "description_font_style": "italic",
+-    "github_user": "marshmallow-code",
+-    "github_repo": "marshmallow",
+-    "github_banner": True,
+-    "github_type": "star",
+     "opencollective": "marshmallow",
+     "tidelift_url": (
+         "https://tidelift.com/subscription/pkg/pypi-marshmallow"
