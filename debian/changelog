@@ -1,4 +1,4 @@
-python-marshmallow (3.2.1-1) unstable; urgency=medium
+python-marshmallow (3.2.1-1) bionic; urgency=medium
 
   [ Ondřej Nový ]
   * Use 'python3 -m sphinx' instead of sphinx-build for building docs
